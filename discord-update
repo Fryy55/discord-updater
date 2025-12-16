@@ -1,0 +1,55 @@
+#!/bin/bash
+
+set -e
+
+
+if [[ $# -ne 1 ]] || [[ ! -f $1 ]] || ! file $1 | grep -q 'gzip compressed data'; then
+    echo 'Pass the new .tar.gz update archive as the only argument.'
+
+    exit 1
+fi
+
+
+echo "Unzipping $1 to /opt/Discord..."
+sudo tar -xzf $1 -C '/opt'
+
+files=(
+    'discord.desktop'
+)
+
+for file in ${files[@]}; do
+    old_path="/opt/discord/$file"
+    new_path="/opt/Discord/$file"
+    echo "Moving $old_path to $new_path"
+
+    sudo mv -f $old_path $new_path
+done
+
+echo 'Removing old Discord installation...'
+sudo rm -r '/opt/discord'
+
+echo 'Renaming /opt/Discord to /opt/discord...'
+sudo mv '/opt/Discord' '/opt/discord'
+
+echo 'Removing the archive...'
+sudo rm $1
+
+
+vencord_dir="$(dirname "$(readlink -f "$0")")/vencord"
+if [[ -f $vencord_dir ]]; then
+    while true; do
+        read -rp 'Install Vencord? [Y/n] ' input
+        input=${input,,}
+
+        if [[ $input == 'y' || -z $input ]]; then
+            $vencord_dir
+
+            break
+        elif [[ $input == 'n' ]]; then
+            break
+        fi
+    done
+fi
+
+
+echo "Discord updated."
