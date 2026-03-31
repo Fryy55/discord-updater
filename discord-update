@@ -3,15 +3,15 @@
 set -e
 
 
-if [[ $# -ne 1 ]] || [[ ! -f $1 ]] || ! file $1 | grep -q 'gzip compressed data'; then
-    echo 'Pass the new .tar.gz update archive as the only argument.'
+temp_dir=$(mktemp -d)
+echo "Creating a temporary directory ($temp_dir)"
 
-    exit 1
-fi
+echo "Downloading discord-update.tar.gz to $temp_dir)"
+archive="$temp_dir/discord-update.tar.gz"
+wget 'https://discord.com/api/download/stable?platform=linux&format=tar.gz' -O $archive
 
-
-echo "Unzipping $1 to /opt/Discord..."
-sudo tar -xzf $1 -C '/opt'
+echo "Unzipping $archive to /opt/Discord..."
+sudo tar -xzf $archive -C '/opt'
 
 files=(
     'discord.desktop'
@@ -31,8 +31,8 @@ sudo rm -r '/opt/discord'
 echo 'Renaming /opt/Discord to /opt/discord...'
 sudo mv '/opt/Discord' '/opt/discord'
 
-echo 'Removing the archive...'
-sudo rm $1
+echo 'Removing the temporary directory...'
+sudo rm -r $temp_dir
 
 
 vencord_dir="$(dirname "$(readlink -f "$0")")/vencord"
