@@ -6,7 +6,7 @@ set -e
 temp_dir=$(mktemp -d)
 echo "Creating a temporary directory ($temp_dir)"
 
-echo "Downloading discord-update.tar.gz to $temp_dir)"
+echo "Downloading discord-update.tar.gz to $temp_dir"
 archive="$temp_dir/discord-update.tar.gz"
 wget 'https://discord.com/api/download/stable?platform=linux&format=tar.gz' -O $archive
 
