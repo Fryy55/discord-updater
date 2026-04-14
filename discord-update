@@ -3,12 +3,37 @@
 set -e
 
 
+url='https://discord.com/api/download/stable?platform=linux&format=tar.gz'
+
+if [[ $# -gt 2 ]]; then
+    echo 'Too many arguments passed!'
+    exit 1
+elif [[ $1 == '--version' ]]; then
+    if [[ $# -eq 1 ]]; then
+        echo 'Missing a version number!'
+        exit 1
+    fi
+
+    echo "Downloading for version $2"
+
+    url="https://stable.dl2.discordapp.net/apps/linux/0.0.$2/discord-0.0.$2.tar.gz"
+elif [[ $# -ne 0 ]]; then
+    echo 'Extra arguments passed!'
+    exit 1
+fi
+
 temp_dir=$(mktemp -d)
-echo "Creating a temporary directory ($temp_dir)"
+sudo echo "Creating a temporary directory ($temp_dir)"
 
 echo "Downloading discord-update.tar.gz to $temp_dir"
 archive="$temp_dir/discord-update.tar.gz"
-wget 'https://discord.com/api/download/stable?platform=linux&format=tar.gz' -O $archive
+wget $url -O $archive
+
+if [[ ! -f $archive ]]; then
+    echo 'Downloaded file is missing; exiting'
+    sudo rm -r $temp_dir
+    exit 1
+fi
 
 echo "Unzipping $archive to /opt/Discord..."
 sudo tar -xzf $archive -C '/opt'
