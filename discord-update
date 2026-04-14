@@ -14,7 +14,7 @@ elif [[ $1 == '--version' ]]; then
         exit 1
     fi
 
-    echo "Downloading for version $2"
+    echo "Downloading version $2"
 
     url="https://stable.dl2.discordapp.net/apps/linux/0.0.$2/discord-0.0.$2.tar.gz"
 elif [[ $# -ne 0 ]]; then
